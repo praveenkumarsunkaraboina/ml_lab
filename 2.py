@@ -4,11 +4,11 @@ import statistics as stats
 data = [10,20,30,30,40,40,50]
 
 print("Mean:",stats.mean(data))
+print("Harmonic Mean:",stats.harmonic_mean(data))
+print("geometric mean:",stats.geometric_mean(data))
 print("Median:",stats.median(data))
 print("Mode:",stats.mode(data))
 print("All Modes:",stats.multimode(data))
-print("Harmonic Mean:",stats.harmonic_mean(data))
-print("geometric mean:",stats.geometric_mean(data))
 print("Variance:",stats.variance(data))
 print("Standard Deviation:",stats.stdev(data))
 
@@ -77,14 +77,25 @@ arr = np.array([1,2,3,4,5])
 print(stats.skew(arr))
 print(stats.kurtosis(arr))
 
+# Kurtosis is a statistical measure that describes the "tailedness" or extremity of outliers in the distribution of data. It indicates whether the data have heavy tails (more outliers) or light tails (fewer outliers) compared to a normal distribution.
+
+# High kurtosis (> 0): More data in the tails (more outliers).
+# Low kurtosis (< 0): Less data in the tails (fewer outliers).
+# Normal distribution: Kurtosis is 0 (when using Fisher’s definition, as in scipy.stats.kurtosis with default settings).
+
 # probability dist
 print(stats.norm.pdf(2))
 print(stats.binom.pmf(2,10,0.5)) # 2 successes, 10 trails, 0.5 probability
 
+x = np.array([10,20,30,40,50])
+y = np.array([15,25,35,45,55])
+corr = stats.pearsonr(x,y)
+print(corr)
+
 def func(x):
   return x**2+5*x+6
 
-result = optimize.minimize(func,0)
+result = optimize.minimize(func,0) # 0 is initial value for x
 print(result.x)
 
 # Linear Algebra - Solving Linear Equations (Ax = b)
@@ -107,9 +118,5 @@ dist = spatial.distance.euclidean(point1,point2)
 print(dist)
 
 
-x = np.array([10,20,30,40,50])
-y = np.array([15,25,35,45,55])
-corr = stats.pearsonr(x,y)
-print(corr)
 
 

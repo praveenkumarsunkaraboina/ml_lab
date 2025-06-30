@@ -30,10 +30,9 @@ new_pred = log_reg.predict(new_data)
 for i,val in enumerate(new_data):
     print(f'Hours Studied: {val[0]}, Prediction: {"Failed" if new_pred[i]==0 else "Passed"}')
 
-plt.scatter(x,y,color='blue',label='Data Points')
-plt.scatter(new_data,new_pred,color='green',marker='*',label='Prediction')
-
-plt.plot(x,log_reg.predict(x),color='red',label='Logistic Regression')
+plt.scatter(x,y,label='Data Points')
+plt.scatter(new_data,new_pred,label='Predicted',marker='*')
+plt.plot(x,log_reg.predict(x),label='Logistic Regression')
 
 plt.xlabel('Hours Studied')
 plt.ylabel('Passed(1)/Failed(0)')

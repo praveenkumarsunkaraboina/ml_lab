@@ -1,44 +1,67 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris
 from sklearn.metrics import silhouette_score
-import pandas as pd
 
-data = {
-    'X': [1.0, 1.5, 5.0, 8.0, 1.0, 9.0, 8.0, 10.0, 9.0],
-    'Y': [2.0, 1.8, 8.0, 8.0, 0.6, 11.0, 2.0, 2.0, 3.0]
+iris = load_iris()
+df = pd.DataFrame(iris.data,columns=iris.feature_names)
+df['target']=iris.target
+
+
+label_encoders = {}
+
+for col in df.select_dtypes(include='object').columns:
+    le = LabelEncoder()
+    df[col]=le.fit_transform(df[col])
+    label_encoders[col]=le
+
+
+scaler = StandardScaler()
+
+X = scaler.fit_transform(df.select_dtypes(include=['int64','float64']).values)
+
+X_train,_ = train_test_split(X,test_size=0.2,random_state=42)
+
+kmeans = KMeans(n_clusters=3,random_state=42)
+kmeans.fit(X_train)
+
+silhouette_score = silhouette_score(X_train,kmeans.labels_)
+
+
+print(f"Silhouette Score: {silhouette_score}")
+
+new_data_point = {
+    'sepal length (cm)':2.5,
+    'sepal width (cm)':3.5,
+    'petal length (cm)':4.5,
+    'petal width (cm)':2.5,
+    'target':0
 }
 
-df = pd.DataFrame(data)
+new_df = pd.DataFrame([new_data_point])
 
-df.to_csv('sample.csv',index=False)
+for col, le in label_encoders.items():
+    if col in new_df:
+        new_df[col] = le.transform(new_df[col])
 
-def load_dataset():
-    file_path = input("Enter CSV file path:").strip()
-    df=pd.read_csv(file_path)
-    return df
+new_data_point_scaled = scaler.transform(new_df.values)
 
-def perform_kmeans(data,k):
-    scaler = StandardScaler()
-    scaled_data = scaler.fit_transform(data)
-    kmeans = KMeans(n_clusters=k,random_state=0)
-    kmeans.fit(scaled_data)
-    data['Cluster']=kmeans.labels_
-    return data, scaled_data, kmeans.labels_
+predicted_cluster = kmeans.predict(new_data_point_scaled)
 
-def plot_clusters(data,labels):
-    plt.scatter(data=data,x=data.columns[0],y=data.columns[1],c=labels)
-    plt.title("K-Means Clustering")
-    plt.show()
+print("Predicted Cluster:",iris.target_names[predicted_cluster[0]])
 
-def main():
-    print("=== Simple K-Means Clustering with Silhouette Score ===")
-    data = load_dataset()
-    k = int(input("Enter number of clusters (K): "))
-    clustered_data, scaled_data, labels = perform_kmeans(data.copy(), k)
-    score = silhouette_score(scaled_data, labels)
-    print(f"\nSilhouette Score for k={k}: {score:.4f}")
-    plot_clusters(clustered_data,labels)
 
-main()
+plt.figure(figsize=(5,5))
+plt.scatter(X_train[:,0],X_train[:,1],c=kmeans.labels_)
+plt.scatter(new_data_point_scaled[:,0],new_data_point_scaled[:,1],color='green',marker='*',label=str(iris.target_names[predicted_cluster[0]]))
+for i,center in enumerate(kmeans.cluster_centers_):
+    plt.annotate(str(iris.target_names[i]),(center[0],center[1]))
+
+plt.xlabel(iris.feature_names[0])
+plt.ylabel(iris.feature_names[1])
+plt.legend()
+plt.title('K-Means Clustering')
+plt.show()

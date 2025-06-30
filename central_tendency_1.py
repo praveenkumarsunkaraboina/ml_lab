@@ -1,5 +1,9 @@
 def mean(data): 
-    return sum(data)/len(data) 
+    sum=0
+    for d in data:
+        sum+=d
+    n = len(data)
+    return sum/n
  
 def median(data): 
     n=len(data) 
@@ -11,11 +15,13 @@ def median(data):
         return sort_data[mid] 
  
 def mode(data): 
-    frequency={} 
+    freq={} 
+    max_freq=0
     for num in data: 
-        frequency[num]=frequency.get(num,0)+1 
-    max_freq=max(frequency.values()) 
-    modes=[key for key,value in frequency.items() if value==max_freq] 
+        freq[num]=freq.get(num,0)+1 
+        max_freq=max(max_freq,freq[num])
+        
+    modes=[key for key,value in freq.items() if value==max_freq] 
     return modes 
  
 def variance(data): 
@@ -40,6 +46,5 @@ def statistics(data):
     print(f"Std_dev={Std_dev}") 
  
 if __name__=="__main__": 
-    user_input=input("Enter the numbers seperated by spaces:") 
-    sample_data=list(map(float,user_input.strip().split())) 
-    statistics(sample_data)
+    user_input = [float(x) for x in input("Enter the numbers seperated by spaces:").split()] 
+    statistics(user_input)
